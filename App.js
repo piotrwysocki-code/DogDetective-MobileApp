@@ -8,9 +8,8 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, SafeAreaView, Button, Image, TouchableOpacity } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 import { Camera } from 'expo-camera';
-import { shareAsync } from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
-//import styles from './css.js'
+import * as ImagePicker from 'expo-image-picker';
 
 
 export default function App() {
@@ -18,6 +17,7 @@ export default function App() {
   const [hasCameraPermission, setHasCameraPermission] = useState();
   const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState();
   const [photo, setPhoto] = useState();
+  let newPhoto;
 
   //request permissions from the user
   useEffect(() => {
@@ -44,32 +44,59 @@ export default function App() {
       exif: false
     };
 
-    let newPhoto = await cameraRef.current.takePictureAsync(options);
+    newPhoto = await cameraRef.current.takePictureAsync(options);
+    console.log(newPhoto);
+
     setPhoto(newPhoto);
   };
 
-  if (photo) {
-    let sharePic = () => {
-      shareAsync(photo.uri).then(() => {
-        setPhoto(undefined);
-      });
+  // This function is triggered when the "Select an image" button pressed
+  const pickImage = async () => {
+    // Ask the user for the permission to access the media library 
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    let options = {
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      base64: true,
+      quality: 1,
     };
 
+    if (permissionResult.granted === false) {
+      alert("You've refused to allow this appp to access your photos!");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync(options);
+
+    setPhoto(result)
+
+    /*if (!result.cancelled) {
+      setPhoto(undefined);
+    }*/
+  }
+
+  if (photo) {
     //saves photo to user's gallery
     let savePhoto = () => {
       MediaLibrary.saveToLibraryAsync(photo.uri).then(() => {
-        setPhoto(undefined);
+        setPhoto(undefined); //get rid of the preview screen
       });
     };
 
     //After user takes a picture, preview will be displayed with 2 options
-    // Save image to the carela roll (which will later be send to our model)
+    // Save image to the camera roll (which will later be send to our model)
     //Discard, which will return back to the camera screen
     return (
       <SafeAreaView style={styles.container}>
         <Image style={styles.preview} source={{ uri: "data:image/jpg;base64," + photo.base64 }} />
-        {hasMediaLibraryPermission ? <Button title="Save" onPress={savePhoto} /> : undefined}
-        <Button title="Discard" onPress={() => setPhoto(undefined)} /> 
+        {hasMediaLibraryPermission ? 
+        <TouchableOpacity title="Submit" onPress={savePhoto}>
+          <Image style={styles.submitImage} source={require("./assets/yes.png")}/>
+        </TouchableOpacity>
+         : undefined}
+        <TouchableOpacity title="Discard" onPress={() => setPhoto(undefined)}>
+          <Image style={styles.discardImage} source={require("./assets/no.png")}/>
+        </TouchableOpacity> 
       </SafeAreaView>
     );
   }
@@ -77,8 +104,11 @@ export default function App() {
   return (
     <Camera style={styles.container} ref={cameraRef}>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity title="Take Pic" onPress={takePic}>
-          <Image style={styles.takeImage} source={require("./assets/takeImage2.png")}/>
+        <TouchableOpacity style={styles.column} onPress={takePic}>
+        <Image style={styles.takeImage} source={require("./assets/takeImage2.png")}/>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.column} onPress={pickImage}>
+        <Image style={styles.gallery} source={require("./assets/gallery.png")}/>
         </TouchableOpacity>
       </View>
       <StatusBar style="auto" />
@@ -89,23 +119,45 @@ export default function App() {
 //css
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    display: 'flex',
+    width: '100%',
+    height: '100%',
   },
   buttonContainer: {
-    alignSelf: 'auto',
-    marginTop: 600,
+    marginTop: 700,
   },
   preview: {
     alignSelf: 'stretch',
     flex: 1
   },
+  column:{
+    float: 'left',
+  },
   takeImage: {
     height: 100,
     width: 100,
-    color: "white"
+    color: "white",
+    alignSelf: 'center'
+  },
+  gallery: {
+    height: 50,
+    width: 50,
+    color: "white",
+    bottom: 60,
+    left: 90
+    },
+  discardImage:{
+    height: 70,
+    width: 70,
+    color: "white",
+    left: 100,
+    top: -20
+  },
+  submitImage:{
+    height: 75,
+    width: 70,
+    color: "white",
+    left: 250,
+    top: 50
   }
 });
-
-
