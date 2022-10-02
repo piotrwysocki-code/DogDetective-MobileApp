@@ -45,6 +45,7 @@ export default function App() {
     };
 
     newPhoto = await cameraRef.current.takePictureAsync(options);
+    
     console.log(newPhoto);
 
     setPhoto(newPhoto);
@@ -56,7 +57,7 @@ export default function App() {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     let options = {
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       base64: true,
       quality: 1,
     };
@@ -68,11 +69,13 @@ export default function App() {
 
     const result = await ImagePicker.launchImageLibraryAsync(options);
 
-    setPhoto(result)
+    if(result.cancelled === true){
+      setPhoto(undefined)
+    } else{
+      newPhoto = result;
+      setPhoto(newPhoto)
+    }
 
-    /*if (!result.cancelled) {
-      setPhoto(undefined);
-    }*/
   }
 
   if (photo) {
@@ -88,7 +91,7 @@ export default function App() {
     //Discard, which will return back to the camera screen
     return (
       <SafeAreaView style={styles.container}>
-        <Image style={styles.preview} source={{ uri: "data:image/jpg;base64," + photo.base64 }} />
+        <Image source={{ uri: "data:image/jpg;base64," + photo.base64 }} style={styles.container}/>
         {hasMediaLibraryPermission ? 
         <TouchableOpacity title="Submit" onPress={savePhoto}>
           <Image style={styles.submitImage} source={require("./assets/yes.png")}/>
@@ -126,38 +129,43 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginTop: 700,
   },
-  preview: {
-    alignSelf: 'stretch',
-    flex: 1
-  },
-  column:{
-    float: 'left',
+  history: {
+    height: 45,
+    width: 45,
+    left: "66%",
+    top: "180%"
   },
   takeImage: {
     height: 100,
     width: 100,
-    color: "white",
-    alignSelf: 'center'
+    left: "37%"
   },
   gallery: {
     height: 50,
     width: 50,
-    color: "white",
-    bottom: 60,
-    left: 90
+    left: "20%",
+    top: "-130%"
     },
+
   discardImage:{
     height: 70,
     width: 70,
     color: "white",
-    left: 100,
-    top: -20
+    bottom: "450%",
+    left: "25%"
   },
   submitImage:{
     height: 75,
     width: 70,
     color: "white",
-    left: 250,
-    top: 50
-  }
+    bottom: "325%",
+    left: "60%"
+  },
+  preview: {
+
+    height: '99%',
+    width: "100%",
+    alignSelf: "center",
+    bottom: "5%"
+  },
 });
