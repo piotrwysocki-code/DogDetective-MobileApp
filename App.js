@@ -43,6 +43,7 @@ export default function App() {
   //method to snap a picture 
   let takePic = async () => {
     let options = {
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1,
       base64: true,
       exif: false
@@ -50,7 +51,7 @@ export default function App() {
 
     newPhoto = await cameraRef.current.takePictureAsync(options);
     
-    //console.log(newPhoto);
+    console.log(newPhoto);
 
     setPhoto(newPhoto);
   };
@@ -86,18 +87,12 @@ export default function App() {
        
     console.log(photo);
 
-    axios.post('http://99.79.108.211/api.classify', photo.uri)
-    .then(result => {
-        console.log(result.data)
-    }).catch(err => {
-        console.log(err.response.data)
-    })
-
     try {
       console.log("Upload Image", photo.uri);
 
-      const formData = new FormData();
-      formData.append("filename", photo.uri);
+      let formData = new FormData();
+      formData.append("file", photo.uri, 'tempName');
+
       console.log("____________________");
 
       console.log("Form Data", formData);
@@ -109,40 +104,42 @@ export default function App() {
         }
       };
 
-      const url = 'http://99.79.108.211/api/classify';
-  
-      const result = await axios.post(url, formData, config);
-      console.log("RESULT: ", result);
+      axios.post('http://99.79.108.211/api.classify', formData, config)
+      .then(result => {
+          console.log(result.data)
+      }).catch(err => {
+          console.log(err.response.data)
+      }).finally( temp =>{
+        if (photo) {
+          //saves photo to user's gall
+          let savePhoto = () => {
+            MediaLibrary.saveToLibraryAsync(photo.uri).then(() => {
+              setPhoto(undefined); //get rid of the preview screen
+            });
+          };
+      
+          //After user takes a picture, preview will be displayed with 2 options
+          // Save image to the camera roll (which will later be send to our model)
+          //Discard, which will return back to the camera screen
+          return (
+            <SafeAreaView style={styles.container}>
+              <Image source={{ uri: "data:image/jpg;base64," + photo.base64 }} style={styles.container}/>
+              {hasMediaLibraryPermission ? 
+              <TouchableOpacity title="Submit" onPress={upload}>
+                <Image style={styles.submitImage} source={require("./assets/yes.png")}/>
+              </TouchableOpacity>
+               : undefined}
+              <TouchableOpacity title="Discard" onPress={() => setPhoto(undefined)}>
+                <Image style={styles.discardImage} source={require("./assets/no.png")}/>
+              </TouchableOpacity> 
+            </SafeAreaView>
+          );
+        }
+      })
     } catch (error) {
-      console.error("ERORO___________ " + error);
+      console.error("ERROR___________ " + error);
     }
   };
-
-  if (photo) {
-    //saves photo to user's gall
-    let savePhoto = () => {
-      MediaLibrary.saveToLibraryAsync(photo.uri).then(() => {
-        setPhoto(undefined); //get rid of the preview screen
-      });
-    };
-
-    //After user takes a picture, preview will be displayed with 2 options
-    // Save image to the camera roll (which will later be send to our model)
-    //Discard, which will return back to the camera screen
-    return (
-      <SafeAreaView style={styles.container}>
-        <Image source={{ uri: "data:image/jpg;base64," + photo.base64 }} style={styles.container}/>
-        {hasMediaLibraryPermission ? 
-        <TouchableOpacity title="Submit" onPress={upload}>
-          <Image style={styles.submitImage} source={require("./assets/yes.png")}/>
-        </TouchableOpacity>
-         : undefined}
-        <TouchableOpacity title="Discard" onPress={() => setPhoto(undefined)}>
-          <Image style={styles.discardImage} source={require("./assets/no.png")}/>
-        </TouchableOpacity> 
-      </SafeAreaView>
-    );
-  }
 
   return (
     <Camera style={styles.container} ref={cameraRef}>
