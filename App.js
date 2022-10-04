@@ -10,9 +10,13 @@ import { useEffect, useRef, useState } from 'react';
 import { Camera } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import * as ImagePicker from 'expo-image-picker';
+import axios from 'axios';
+import FormData from 'form-data'
+import file from './assets/pickImage.png'
 
 
 export default function App() {
+  //Variables
   let cameraRef = useRef();
   const [hasCameraPermission, setHasCameraPermission] = useState();
   const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState();
@@ -46,7 +50,7 @@ export default function App() {
 
     newPhoto = await cameraRef.current.takePictureAsync(options);
     
-    console.log(newPhoto);
+    //console.log(newPhoto);
 
     setPhoto(newPhoto);
   };
@@ -62,7 +66,7 @@ export default function App() {
       quality: 1,
     };
 
-    if (permissionResult.granted === false) {
+    if (permissionResult === false) {
       alert("You've refused to allow this appp to access your photos!");
       return;
     }
@@ -77,6 +81,50 @@ export default function App() {
     }
 
   }
+
+  const upload = async file => {
+
+    /*axios.get('http://99.79.108.211/breeds')
+    .then(response => response.data)
+    .catch(error => {
+      if (error.response) {
+        console.log(error.response);
+      }
+    });*/
+    
+    console.log(photo);
+
+    axios.post('http://99.79.108.211/api.classify', photo.uri)
+    .then(result => {
+        console.log(result.data)
+    }).catch(err => {
+        console.log(err.response.data)
+    })
+
+    try {
+      console.log("Upload Image", photo.uri);
+
+      const formData = new FormData();
+      formData.append("filename", photo.uri);
+      console.log("____________________");
+
+      console.log("Form Data", formData);
+
+      const config = {
+        headers: {
+          "accept": "application/json",
+          "content-type": "multipart/form-data"
+        }
+      };
+
+      const url = 'http://99.79.108.211/api/classify';
+  
+      const result = await axios.post(url, formData, config);
+      console.log("RESULT: ", result);
+    } catch (error) {
+      console.error("ERORO___________ " + error);
+    }
+  };
 
   if (photo) {
     //saves photo to user's gallery
@@ -93,7 +141,7 @@ export default function App() {
       <SafeAreaView style={styles.container}>
         <Image source={{ uri: "data:image/jpg;base64," + photo.base64 }} style={styles.container}/>
         {hasMediaLibraryPermission ? 
-        <TouchableOpacity title="Submit" onPress={savePhoto}>
+        <TouchableOpacity title="Submit" onPress={upload}>
           <Image style={styles.submitImage} source={require("./assets/yes.png")}/>
         </TouchableOpacity>
          : undefined}
