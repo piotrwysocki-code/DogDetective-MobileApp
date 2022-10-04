@@ -13,6 +13,7 @@ import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import FormData from 'form-data';
 import * as ImageManipulator from 'expo-image-manipulator';
+import * as FileSystem from 'expo-file-system';
 
 
 
@@ -53,7 +54,7 @@ export default function App() {
     
     //console.log(newPhoto);
 
-    setPhoto(newPhoto);
+    setPhoto(newPhoto.uri);
   };
 
   // This function is triggered when the "Select an image" button pressed
@@ -78,7 +79,7 @@ export default function App() {
       setPhoto(undefined)
     } else{
       newPhoto = result;
-      setPhoto(newPhoto)
+      setPhoto(result.uri)
     }
 
   }
@@ -90,9 +91,17 @@ export default function App() {
     //http://99.79.108.211/api/classify
     const form = new FormData();
     
-    const resizedPhoto = (await ImageManipulator.manipulateAsync(photo.uri,[{resize: {width: 331, height: 331}}]));
+    //const resizedPhoto = (await ImageManipulator.manipulateAsync(photo.uri,[{resize: {width: 331, height: 331}}]));
 
-    form.append('file', resizedPhoto);
+    //const resizedPhoto
+
+    /**
+     * Import file system
+     * save photo as a file
+     * 
+     */
+
+    form.append('file', photo);
 
     console.log(form)
 
@@ -120,6 +129,18 @@ export default function App() {
     
   };
 
+  uploadImage = async ({photo}) => FileSystem.uploadAsync(
+    'http://99.79.108.211/api/classify',
+    photo,{
+      headers: {
+        'Content-Type': 'multipart/form-data'
+    },
+    uploadType: FileSystem.FileSystemUploadType.MULTIPART,
+    fieldName: 'files',
+    mimeType: 'image/png',
+    }
+  );
+
 
   if (photo) {
     //saves photo to user's gallery
@@ -136,7 +157,7 @@ export default function App() {
       <SafeAreaView style={styles.container}>
         <Image source={{ uri: "data:image/jpg;base64," + photo.base64 }} style={styles.container}/>
         {hasMediaLibraryPermission ? 
-        <TouchableOpacity title="Submit" onPress={upload}>
+        <TouchableOpacity title="Submit" onPress={uploadImage}>
           <Image style={styles.submitImage} source={require("./assets/yes.png")}/>
         </TouchableOpacity>
          : undefined}
