@@ -82,16 +82,8 @@ export default function App() {
 
   }
 
-  const upload = async file => {
-
-    /*axios.get('http://99.79.108.211/breeds')
-    .then(response => response.data)
-    .catch(error => {
-      if (error.response) {
-        console.log(error.response);
-      }
-    });*/
-    
+  const upload = async (file) => {
+       
     console.log(photo);
 
     axios.post('http://99.79.108.211/api.classify', photo.uri)
