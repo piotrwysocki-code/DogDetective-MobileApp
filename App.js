@@ -127,7 +127,7 @@ export default function App() {
   };
 
   if (photo) {
-    //saves photo to user's gallery
+    //saves photo to user's gall
     let savePhoto = () => {
       MediaLibrary.saveToLibraryAsync(photo.uri).then(() => {
         setPhoto(undefined); //get rid of the preview screen
