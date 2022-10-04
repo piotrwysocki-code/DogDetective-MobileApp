@@ -11,8 +11,9 @@ import { Camera } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
-import FormData from 'form-data'
-import file from './assets/pickImage.png'
+import FormData from 'form-data';
+import * as ImageManipulator from 'expo-image-manipulator';
+
 
 
 export default function App() {
@@ -82,49 +83,43 @@ export default function App() {
 
   }
 
-  const upload = async file => {
-
-    /*axios.get('http://99.79.108.211/breeds')
-    .then(response => response.data)
-    .catch(error => {
-      if (error.response) {
-        console.log(error.response);
-      }
-    });*/
+  const upload = async (photo) => {
     
-    console.log(photo);
+    //http://15.222.119.165:4000/upload
 
-    axios.post('http://99.79.108.211/api.classify', photo.uri)
-    .then(result => {
-        console.log(result.data)
-    }).catch(err => {
-        console.log(err.response.data)
-    })
+    //http://99.79.108.211/api/classify
+    const form = new FormData();
+    
+    const resizedPhoto = (await ImageManipulator.manipulateAsync(photo.uri,[{resize: {width: 331, height: 331}}]));
 
-    try {
-      console.log("Upload Image", photo.uri);
+    form.append('file', resizedPhoto);
 
-      const formData = new FormData();
-      formData.append("filename", photo.uri);
-      console.log("____________________");
+    console.log(form)
 
-      console.log("Form Data", formData);
+    let result = axios.post('http://99.79.108.211/api/classify', form, {
+      headers: {
+          'Content-Type': 'multipart/form-data'
+      }
+  }).then((response) => {
+      console.log(response.data)
+      console.log(result.data)
+      /*return(
+        <SafeAreaView style={styles.container}>
+        <Image source={{ uri: "data:image/jpg;base64," + photo.base64 }} style={styles.container}/>
+        {hasMediaLibraryPermission ? 
+        <TouchableOpacity title="Submit" onPress={upload}>
+          <Image style={styles.submitImage} source={require("./assets/yes.png")}/>
+        </TouchableOpacity>
+         : undefined}
+      </SafeAreaView>
+      )*/
 
-      const config = {
-        headers: {
-          "accept": "application/json",
-          "content-type": "multipart/form-data"
-        }
-      };
-
-      const url = 'http://99.79.108.211/api/classify';
-  
-      const result = await axios.post(url, formData, config);
-      console.log("RESULT: ", result);
-    } catch (error) {
-      console.error("ERORO___________ " + error);
-    }
+  }).catch((error) => {
+      console.log(error.message)
+  })
+    
   };
+
 
   if (photo) {
     //saves photo to user's gallery
@@ -210,7 +205,7 @@ const styles = StyleSheet.create({
     left: "60%"
   },
   preview: {
-
+    resizeMode: "scaleToFit",
     height: '99%',
     width: "100%",
     alignSelf: "center",
