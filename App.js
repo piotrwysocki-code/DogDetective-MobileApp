@@ -54,7 +54,7 @@ export default function App() {
     
     //console.log(newPhoto);
 
-    setPhoto(newPhoto.uri);
+    setPhoto(newPhoto);
   };
 
   // This function is triggered when the "Select an image" button pressed
@@ -79,67 +79,34 @@ export default function App() {
       setPhoto(undefined)
     } else{
       newPhoto = result;
-      setPhoto(result.uri)
+      setPhoto(result)
     }
 
   }
 
-  const upload = async (photo) => {
+  const uploadImage =  async () => {
+
+    //const resizedPhoto = (await ImageManipulator.manipulateAsync(photo,[{resize: {width: 331, height: 331}}]));
     
-    //http://15.222.119.165:4000/upload
+    //console.log("_____________") //design
+    //console.log(photo);   //printing the image variable to see what t looks like
 
-    //http://99.79.108.211/api/classify
-    const form = new FormData();
-    
-    //const resizedPhoto = (await ImageManipulator.manipulateAsync(photo.uri,[{resize: {width: 331, height: 331}}]));
 
-    //const resizedPhoto
-
-    /**
-     * Import file system
-     * save photo as a file
-     * 
-     */
-
-    form.append('file', photo);
-
-    console.log(form)
-
-    let result = axios.post('http://99.79.108.211/api/classify', form, {
-      headers: {
-          'Content-Type': 'multipart/form-data'
-      }
-  }).then((response) => {
-      console.log(response.data)
-      console.log(result.data)
-      /*return(
-        <SafeAreaView style={styles.container}>
-        <Image source={{ uri: "data:image/jpg;base64," + photo.base64 }} style={styles.container}/>
-        {hasMediaLibraryPermission ? 
-        <TouchableOpacity title="Submit" onPress={upload}>
-          <Image style={styles.submitImage} source={require("./assets/yes.png")}/>
-        </TouchableOpacity>
-         : undefined}
-      </SafeAreaView>
-      )*/
-
-  }).catch((error) => {
-      console.log(error.message)
-  })
-    
-  };
-
-  uploadImage = async ({photo}) => FileSystem.uploadAsync(
-    'http://99.79.108.211/api/classify',
-    photo,{
+    FileSystem.uploadAsync(
+    'http://15.222.119.165:4000/upload',      //our server
+    photo.uri,{                               //user's uploaded photo 
       headers: {
         'Content-Type': 'multipart/form-data'
-    },
-    uploadType: FileSystem.FileSystemUploadType.MULTIPART,
-    fieldName: 'files',
-    mimeType: 'image/png',
-    }
-  );
+      },
+      uploadType: FileSystem.FileSystemUploadType.MULTIPART,
+      fieldName: 'file',
+      mimeType: 'image/png',
+    }).then((response) => {
+      console.log(response);
+    }).catch((error) => {
+      console.log(error);
+    })
+  };
 
 
   if (photo) {
