@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, Button, Image } from 'react-native'; // importing components
 import ResultScreen from './ResultScreen';
 
+
 const UploadImage = (photo, props) => {
 
     FileSystem.uploadAsync(
