@@ -6,11 +6,17 @@ class  ResultScreen extends Component {
   render() {
     // get the params from the uploadImage page
     const { result, img } = this.props.route.params;
+  
+    const improvedResult = result.replace(/_/g," ")
+
+    for(i in result){
+      console.log(result[i])
+    }
 
     return (
       <SafeAreaView style={styles.container}>
-          <Image source={{ uri: "data:image/jpg;base64," + img.base64 }}/>
-          <Text>{result}</Text>
+          <Image style={styles.image} source={{ uri: "data:image/jpg;base64," + img.base64 }}/>
+          <Text style={styles.text}>{(improvedResult.replace(/"/g," "))}</Text>
           <Button 
             title="Done"
             onPress={() => this.props.navigation.navigate('Home')}
@@ -28,6 +34,14 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'center',
     },
+    image: {
+      width: 300,
+      height: 300,
+      marginBottom: "50%",
+    },
+    text: {
+      bottom: "10%"
+    }
   });
 
 export default ResultScreen;

@@ -20,6 +20,8 @@ const UploadImage = (photo, props) => {
           result: response.body,
           img: photo
         });
+
+        console.log(response.body[0].Breed)
     }).catch((error) => {
       console.log(error);
     });

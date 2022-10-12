@@ -43,7 +43,7 @@ const CameraScreen = (props) => {
 
     newPhoto = await cameraRef.current.takePictureAsync(options);
     
-    console.log(newPhoto);
+    //console.log(newPhoto);
 
     setPhoto(newPhoto);
   };
