@@ -90,11 +90,11 @@ const CameraScreen = (props) => {
       <SafeAreaView style={styles.container}>
         <Image source={{ uri: "data:image/jpg;base64," + photo.base64 }} style={styles.image}/>
         {hasMediaLibraryPermission ? 
-        <TouchableOpacity title="Submit" onPress={() => uploadImage(photo, props)} >
+        <TouchableOpacity style={styles.submitImage} title="Submit" onPress={() => uploadImage(photo, props)} >
           <Image style={styles.submitImage} source={require("../assets/yes.png")}/>
         </TouchableOpacity>
          : undefined}
-        <TouchableOpacity title="Discard" onPress={() => setPhoto(undefined)}>
+        <TouchableOpacity style={styles.discardImage} title="Discard" onPress={() => setPhoto(undefined)}>
           <Image style={styles.discardImage} source={require("../assets/no.png")}/>
         </TouchableOpacity> 
       </SafeAreaView>
@@ -154,14 +154,14 @@ const styles = StyleSheet.create({
       discardImage:{
         height: 70,
         width: 70,
-        bottom: "32.5%",
-        left: "25%"
+        bottom: "3%",
+        left: "20%"
       },
       submitImage:{
         height: 75,
         width: 70,
-        bottom: "-66%",
-        left: "60%",
+        bottom: "-5.6%",
+        left: "50%",
         padding: 0,
       },
   });
