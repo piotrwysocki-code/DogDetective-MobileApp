@@ -1,111 +1,61 @@
-/*
-* App.js
-* This is where all the magic happens
-*/
+import 'react-native-gesture-handler';
 
-//Import libraries
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, SafeAreaView, Button, Image, TouchableOpacity } from 'react-native';
-import { useEffect, useRef, useState } from 'react';
-import { Camera } from 'expo-camera';
-import { shareAsync } from 'expo-sharing';
-import * as MediaLibrary from 'expo-media-library';
-//import styles from './css.js'
+import React, { Component, useState, useEffect} from 'react';
+import { StyleSheet } from 'react-native'; // To add styles
 
+import { createStackNavigator } from '@react-navigation/stack'; //Insert screens into a stack
+import { NavigationContainer } from '@react-navigation/native'; //contains navigator and screen
 
-export default function App() {
-  let cameraRef = useRef();
-  const [hasCameraPermission, setHasCameraPermission] = useState();
-  const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState();
-  const [photo, setPhoto] = useState();
+import HomeScreen from './screens/HomeScreen';// Home screen
+import AboutScreen from './screens/AboutScreen';// About Screen
+import CameraScreen from './screens/CameraScreen';
+import ResultScreen from './screens/ResultScreen';
+import UploadImage from './screens/UploadImage';
 
-  //request permissions from the user
-  useEffect(() => {
-    (async () => {
-      const cameraPermission = await Camera.requestCameraPermissionsAsync();
-      const mediaLibraryPermission = await MediaLibrary.requestPermissionsAsync();
-      setHasCameraPermission(cameraPermission.status === "granted");
-      setHasMediaLibraryPermission(mediaLibraryPermission.status === "granted");
-    })();
-  }, []);
+import ReactLoading from 'react-loading';
 
-  //if permissions are not clear, do not open the camera
-  if (hasCameraPermission === undefined) {
-    return <Text>Requesting permissions...</Text>
-  } else if (!hasCameraPermission) {
-    return <Text>Permission for camera not granted. Please change this in settings.</Text>
-  }
+const Stack = createStackNavigator();
 
-  //method to snap a picture 
-  let takePic = async () => {
-    let options = {
-      quality: 1,
-      base64: true,
-      exif: false
-    };
+class App extends Component {
 
-    let newPhoto = await cameraRef.current.takePictureAsync(options);
-    setPhoto(newPhoto);
-  };
-
-  if (photo) {
-    let sharePic = () => {
-      shareAsync(photo.uri).then(() => {
-        setPhoto(undefined);
-      });
-    };
-
-    //saves photo to user's gallery
-    let savePhoto = () => {
-      MediaLibrary.saveToLibraryAsync(photo.uri).then(() => {
-        setPhoto(undefined);
-      });
-    };
-
-    //After user takes a picture, preview will be displayed with 2 options
-    // Save image to the carela roll (which will later be send to our model)
-    //Discard, which will return back to the camera screen
+  render(){
     return (
-      <SafeAreaView style={styles.container}>
-        <Image style={styles.preview} source={{ uri: "data:image/jpg;base64," + photo.base64 }} />
-        {hasMediaLibraryPermission ? <Button title="Save" onPress={savePhoto} /> : undefined}
-        <Button title="Discard" onPress={() => setPhoto(undefined)} /> 
-      </SafeAreaView>
+      <NavigationContainer> 
+        <Stack.Navigator> 
+
+          <Stack.Screen
+            name="Home"
+            component={HomeScreen}
+          /> 
+          <Stack.Screen
+            name="About"
+            component={AboutScreen}
+          />
+          <Stack.Screen
+            name="Camera"
+            component={CameraScreen}
+          />
+          <Stack.Screen
+            name="Result"
+            component={ResultScreen}
+          />
+          <Stack.Screen
+            name="Upload"
+            component={UploadImage}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
     );
   }
-
-  return (
-    <Camera style={styles.container} ref={cameraRef}>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity title="Take Pic" onPress={takePic}>
-          <Image style={styles.takeImage} source={require("./assets/takeImage2.png")}/>
-        </TouchableOpacity>
-      </View>
-      <StatusBar style="auto" />
-    </Camera>
-  );
 }
 
-//css
 const styles = StyleSheet.create({
   container: {
+     backgroundColor: '#fff',
     flex: 1,
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
   },
-  buttonContainer: {
-    alignSelf: 'auto',
-    marginTop: 600,
-  },
-  preview: {
-    alignSelf: 'stretch',
-    flex: 1
-  },
-  takeImage: {
-    height: 100,
-    width: 100,
-    color: "white"
-  }
 });
 
-
+export default App;
