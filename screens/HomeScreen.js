@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     },
     header: {
         fontSize: 60,
-        fontFamily: "Papyrus",
+        //fontFamily: "Papyrus",
         marginBottom: 50
     }
   });

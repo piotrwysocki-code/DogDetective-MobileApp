@@ -87,9 +87,11 @@ const CameraScreen = (props) => {
     // Save image to the camera roll (which will later be send to our model)
     //Discard, which will return back to the camera screen
     return (
-      <SafeAreaView style={styles.container}>
-        <Image source={{ uri: "data:image/jpg;base64," + photo.base64 }} style={styles.image}/>
-        {hasMediaLibraryPermission ? 
+      <View style={{ flex: 1}}>
+      <View style={styles.cameraContainer}>
+      <Image style={styles.cameraContainer} source={{ uri: "data:image/jpg;base64," + photo.base64 }}/>
+      </View>
+      {hasMediaLibraryPermission ? 
         <TouchableOpacity style={styles.submitImage} title="Submit" onPress={() => uploadImage(photo, props)} >
           <Image style={styles.submitImage} source={require("../assets/yes.png")}/>
         </TouchableOpacity>
@@ -97,22 +99,22 @@ const CameraScreen = (props) => {
         <TouchableOpacity style={styles.discardImage} title="Discard" onPress={() => setPhoto(undefined)}>
           <Image style={styles.discardImage} source={require("../assets/no.png")}/>
         </TouchableOpacity> 
-      </SafeAreaView>
+   </View>
     );
   }
 
   return (
-    <Camera style={styles.container} ref={cameraRef}>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.column} onPress={takePic}>
+    <View style={{ flex: 1}}>
+      <View style={styles.cameraContainer}>
+            <Camera style={styles.container} ref={cameraRef}/>
+      </View>
+      <TouchableOpacity style={styles.column} onPress={takePic}>
         <Image style={styles.takeImage} source={require("../assets/takeImage2.png")}/>
         </TouchableOpacity>
         <TouchableOpacity style={styles.column} onPress={pickImage}>
         <Image style={styles.gallery} source={require("../assets/gallery.png")}/>
         </TouchableOpacity>
-      </View>
-      <StatusBar style="auto" />
-    </Camera>
+   </View>
   );
 };
   
@@ -135,7 +137,7 @@ const styles = StyleSheet.create({
       top: "180%"
     },
     image: {
-      height: 600,
+      height: 400,
       width: 415,
       position: "relative"
     },
@@ -143,13 +145,13 @@ const styles = StyleSheet.create({
       height: 100,
       width: 100,
       left: "37%",
-      top: "-50%"
+      top: "10%"
     },
     gallery: {
       height: 50,
       width: 50,
       left: "20%",
-      top: "-230%"
+      top: "-125%"
       },
       discardImage:{
         height: 70,
@@ -164,4 +166,12 @@ const styles = StyleSheet.create({
         left: "50%",
         padding: 0,
       },
+      cameraContainer: {
+        flex: 1,
+        flexDirection: 'row'
+    },
+    fixedRatio:{
+        flex: 1,
+        aspectRatio: 1
+    },
   });
