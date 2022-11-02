@@ -17,12 +17,12 @@ const UploadImage = (photo, props) => {
       mimeType: 'image/png',
     }).then((response) => {
         //console.log(response);
+
         props.navigation.navigate('Result', {
           result: response.body,
           img: photo
         });
-
-        console.log(response.body[0].Breed)
+        
     }).catch((error) => {
       console.log(error);
     });

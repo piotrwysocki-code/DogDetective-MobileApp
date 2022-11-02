@@ -1,12 +1,12 @@
 //Import libraries
-import { Text, View, StyleSheet, TextInput, Button, TouchableOpacity, Image, SafeAreaView } from "react-native";
+import { ActivityIndicator, Text, View, StyleSheet, TextInput, Button, TouchableOpacity, Image, SafeAreaView } from "react-native";
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef, useState } from 'react';
-import { Camera } from 'expo-camera';
+import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import * as ImagePicker from 'expo-image-picker';
 import uploadImage from "./UploadImage";
-
+import { PinchGestureHandler } from 'react-native-gesture-handler';
 
 const CameraScreen = (props) => {
   //Variables
@@ -14,6 +14,9 @@ const CameraScreen = (props) => {
   const [hasCameraPermission, setHasCameraPermission] = useState();
   const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState();
   const [photo, setPhoto] = useState();
+  const [zoom, setZoom] = useState(0);
+  const [type, setType] = useState(CameraType.back);
+
   let newPhoto;
 
   //request permissions from the user
@@ -33,6 +36,11 @@ const CameraScreen = (props) => {
     return <Text>Permission for camera not granted. Please change this in settings.</Text>
   }
 
+  //this method changed the camera type and loows to flip the image
+  const toggleCameraType = () => {
+    setType(current => (current === CameraType.back ? CameraType.front : CameraType.back));
+  }
+
   //method to snap a picture 
   let takePic = async () => {
     let options = {
@@ -47,6 +55,16 @@ const CameraScreen = (props) => {
 
     setPhoto(newPhoto);
   };
+
+  //this method changes the zoom of the camera
+    const changeZoom = (event) => {
+      if (event.nativeEvent.scale > 1 && zoom < 1) {
+        setZoom(zoom + 0.0005);
+      }
+      if (event.nativeEvent.scale < 1 && zoom > 0) {
+        setZoom(zoom - 0.0005);
+      }
+    };
 
   // This function is triggered when the "Select an image" button pressed
   const pickImage = async () => {
@@ -98,15 +116,16 @@ const CameraScreen = (props) => {
          : undefined}
         <TouchableOpacity style={styles.discardImage} title="Discard" onPress={() => setPhoto(undefined)}>
           <Image style={styles.discardImage} source={require("../assets/no.png")}/>
-        </TouchableOpacity> 
+        </TouchableOpacity>  
    </View>
     );
   }
 
   return (
+    <PinchGestureHandler onGestureEvent={(event) => changeZoom(event)}>
     <View style={{ flex: 1}}>
       <View style={styles.cameraContainer}>
-            <Camera style={styles.container} ref={cameraRef}/>
+            <Camera zoom={zoom} type={type} style={styles.container} ref={cameraRef}/>
       </View>
       <TouchableOpacity style={styles.column} onPress={takePic}>
         <Image style={styles.takeImage} source={require("../assets/takeImage2.png")}/>
@@ -114,7 +133,11 @@ const CameraScreen = (props) => {
         <TouchableOpacity style={styles.column} onPress={pickImage}>
         <Image style={styles.gallery} source={require("../assets/gallery.png")}/>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.column} onPress={toggleCameraType}>
+        <Image style={styles.flipCamera} source={require("../assets/flipCamera.png")}/>
+        </TouchableOpacity>
    </View>
+   </PinchGestureHandler>
   );
 };
   
@@ -159,6 +182,14 @@ const styles = StyleSheet.create({
         bottom: "3%",
         left: "20%"
       },
+      flipCamera:{
+        height: 50,
+        width: 50,
+        right: "-84%",
+        top: "-1460%",
+        backgroundColor: "white",
+        borderRadius: "50%",
+      },
       submitImage:{
         height: 75,
         width: 70,
@@ -174,4 +205,7 @@ const styles = StyleSheet.create({
         flex: 1,
         aspectRatio: 1
     },
+    activity: {
+
+    }
   });

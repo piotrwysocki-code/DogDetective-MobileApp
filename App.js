@@ -20,10 +20,10 @@ class App extends Component {
     return (
       <NavigationContainer> 
         <Stack.Navigator> 
-
           <Stack.Screen
             name="Home"
             component={HomeScreen}
+            options={{headerShown: false}}
           /> 
           <Stack.Screen
             name="About"
@@ -49,7 +49,7 @@ class App extends Component {
 
 const styles = StyleSheet.create({
   container: {
-     backgroundColor: '#fff',
+    backgroundColor: '#fff',
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',

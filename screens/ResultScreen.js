@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Button, Image, SafeAreaView } from 'react-native'; // importing components
+import { ActivityIndicator, TouchableOpacity, ImageBackground, StyleSheet, Text, View, Button, Image, SafeAreaView } from 'react-native'; // importing components
 import background from "../assets/bg.png";
 import * as Progress from 'react-native-progress';
 
@@ -8,15 +8,25 @@ class  ResultScreen extends Component {
 
   render() {
     // get the params from the uploadImage page
+    
     const { result, img } = this.props.route.params;
   
     //const improvedResult = result.replace(/_/g," ")
 
     const improvedResult = JSON.parse(result)
 
+    const arrayOfMessages = ["Case closed!", "The investigations reveals....", 
+      "Dog Detective thinks:", "Hmmmm... Looks like this is:", "The investigations is over! The dog is:"]
+
+    const index = Math.floor(Math.random() * 4) + 1
 
     return (
       <SafeAreaView style={styles.container}>
+        <ImageBackground source={require("../assets/pawbg.png")} resizeMode="cover" style={styles.container}>
+        {result === null ? 
+        <ActivityIndicator style={styles.activity} size="large" />
+         : undefined}
+        
         <Text style={{ backgroundImage: `url(${background})` }}>
         </Text>
         <Image style={styles.image} source={{ uri: "data:image/jpg;base64," + img.base64 }}/>
@@ -36,10 +46,10 @@ class  ResultScreen extends Component {
         ))}
 
             </View>
-            <Button
-            title="Done"
-            onPress={() => this.props.navigation.navigate('Home')}
-            />
+            <TouchableOpacity onPress={() => this.props.navigation.navigate('Home')} style={styles.btn}>
+              <Text>Done</Text>
+            </TouchableOpacity>
+          </ImageBackground>
       </SafeAreaView>
     );
   }
@@ -50,12 +60,14 @@ const styles = StyleSheet.create({
     container: {
       flex: 1,
       alignSelf: 'center',
+      width: '100%',
+      height: '120%',
       alignItems: 'center',
-      //justifyContent: 'center',
+      justifyContent: 'center',
     },
     results: {
       alignItems: 'center',
-      //justifyContent: 'right',
+      justifyContent: 'right',
       top: '20%'
     },
     image: {
@@ -68,7 +80,7 @@ const styles = StyleSheet.create({
       width:200
     },
     text: {
-      fontFamily: 'Times New Roman',
+      fontFamily: 'Arial',
       fontWeight: 'bold',
       bottom: "100%",
       fontSize: 20,
@@ -77,6 +89,18 @@ const styles = StyleSheet.create({
       width: 450,
       height: 850
     },
+    btn:{
+      backgroundColor: "white",
+      fontSize: "20px",
+      width: 150,
+      height: 40,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 10,
+      borderRadius: 25,
+      overflow: 'hidden',
+      bottom: "5%"
+    }
   });
 
 export default ResultScreen;
