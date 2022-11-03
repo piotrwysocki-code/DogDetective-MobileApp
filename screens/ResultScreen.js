@@ -8,10 +8,7 @@ class  ResultScreen extends Component {
 
   render() {
     // get the params from the uploadImage page
-    
     const { result, img } = this.props.route.params;
-  
-    //const improvedResult = result.replace(/_/g," ")
 
     const improvedResult = JSON.parse(result)
 
@@ -23,16 +20,10 @@ class  ResultScreen extends Component {
     return (
       <SafeAreaView style={styles.container}>
         <ImageBackground source={require("../assets/pawbg.png")} resizeMode="cover" style={styles.container}>
-        {result === null ? 
-        <ActivityIndicator style={styles.activity} size="large" />
-         : undefined}
-        
-        <Text style={{ backgroundImage: `url(${background})` }}>
-        </Text>
         <Image style={styles.image} source={{ uri: "data:image/jpg;base64," + img.base64 }}/>
             <View style={styles.results}>
             <Text style={styles.text}>
-        {"The Dog Detective thinks your dog is a:"}
+              {arrayOfMessages[index]}
             </Text>
             {improvedResult.map(name => ( 
               <Text style={styles.text} key={name.Breed}>
@@ -43,13 +34,12 @@ class  ResultScreen extends Component {
                 {" "}{Math.round(name.Confidence * 100)}%
               </Text>
 
-        ))}
-
-            </View>
+            ))}
             <TouchableOpacity onPress={() => this.props.navigation.navigate('Home')} style={styles.btn}>
               <Text>Done</Text>
             </TouchableOpacity>
-          </ImageBackground>
+          </View> 
+        </ImageBackground>
       </SafeAreaView>
     );
   }
@@ -68,7 +58,7 @@ const styles = StyleSheet.create({
     results: {
       alignItems: 'center',
       justifyContent: 'right',
-      top: '20%'
+      top: '25%'
     },
     image: {
       width: 300,
@@ -99,7 +89,7 @@ const styles = StyleSheet.create({
       padding: 10,
       borderRadius: 25,
       overflow: 'hidden',
-      bottom: "5%"
+      top: "-80%"
     }
   });
 

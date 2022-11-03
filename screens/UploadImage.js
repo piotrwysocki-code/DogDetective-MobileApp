@@ -4,9 +4,9 @@ import { StyleSheet, Text, View, Button, Image } from 'react-native'; // importi
 import ResultScreen from './ResultScreen';
 
 
-const UploadImage = (photo, props) => {
+const UploadImage = async (photo, props) => {
 
-    FileSystem.uploadAsync(
+  var returnedResult = await FileSystem.uploadAsync(
     'http://15.222.119.165:4000/upload',      //our server
     photo.uri,{                               //user's uploaded photo 
       headers: {

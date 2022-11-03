@@ -9,8 +9,8 @@ import { NavigationContainer } from '@react-navigation/native'; //contains navig
 import HomeScreen from './screens/HomeScreen';// Home screen
 import AboutScreen from './screens/AboutScreen';// About Screen
 import CameraScreen from './screens/CameraScreen';
-import ResultScreen from './screens/ResultScreen';
 import UploadImage from './screens/UploadImage';
+import ResultScreen from './screens/ResultScreen';
 
 const Stack = createStackNavigator();
 
@@ -26,16 +26,12 @@ class App extends Component {
             options={{headerShown: false}}
           /> 
           <Stack.Screen
-            name="About"
-            component={AboutScreen}
+            name="Result"
+            component={ResultScreen}
           />
           <Stack.Screen
             name="Camera"
             component={CameraScreen}
-          />
-          <Stack.Screen
-            name="Result"
-            component={ResultScreen}
           />
           <Stack.Screen
             name="Upload"

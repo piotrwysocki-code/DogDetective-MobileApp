@@ -1,5 +1,5 @@
 //Import libraries
-import { ActivityIndicator, Text, View, StyleSheet, TextInput, Button, TouchableOpacity, Image, SafeAreaView } from "react-native";
+import { Text, View, StyleSheet, TextInput, Button, TouchableOpacity, Image, SafeAreaView } from "react-native";
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef, useState } from 'react';
 import { Camera, CameraType } from 'expo-camera';
@@ -7,6 +7,7 @@ import * as MediaLibrary from 'expo-media-library';
 import * as ImagePicker from 'expo-image-picker';
 import uploadImage from "./UploadImage";
 import { PinchGestureHandler } from 'react-native-gesture-handler';
+import { ActivityIndicator } from "react-native-paper";
 
 const CameraScreen = (props) => {
   //Variables
@@ -16,6 +17,8 @@ const CameraScreen = (props) => {
   const [photo, setPhoto] = useState();
   const [zoom, setZoom] = useState(0);
   const [type, setType] = useState(CameraType.back);
+  const [isLoading, setIsLoading] = useState(false);
+  const [animate, setAnimate] = useState(true);
 
   let newPhoto;
 
@@ -28,6 +31,12 @@ const CameraScreen = (props) => {
       setHasMediaLibraryPermission(mediaLibraryPermission.status === "granted");
     })();
   }, []);
+
+  useEffect(() => {
+    setTimeout(() => {
+        setAnimate(false);
+    }, 11000);
+  })
 
   //if permissions are not clear, do not open the camera
   if (hasCameraPermission === undefined) {
@@ -106,18 +115,25 @@ const CameraScreen = (props) => {
     //Discard, which will return back to the camera screen
     return (
       <View style={{ flex: 1}}>
-      <View style={styles.cameraContainer}>
-      <Image style={styles.cameraContainer} source={{ uri: "data:image/jpg;base64," + photo.base64 }}/>
+        <View style={styles.cameraContainer}>
+          <Image style={styles.cameraContainer} source={{ uri: "data:image/jpg;base64," + photo.base64 }}/>
+        </View>
+        {isLoading ? 
+          <ActivityIndicator animating={animate} style={[styles.activity, {transform: [{ scale: 1.5 }]}]}  size="large" color="blue" ></ActivityIndicator>
+         : 
+         <Text></Text>
+         }
+          <TouchableOpacity style={styles.submitImage} title="Submit" onPress={() => {
+            setIsLoading(true)
+            setAnimate(true)
+            uploadImage(photo, props)
+          }}>
+            <Image style={styles.submitImage} source={require("../assets/yes.png")}/>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.discardImage} title="Discard" onPress={() => setPhoto(undefined)}>
+            <Image style={styles.discardImage} source={require("../assets/no.png")}/>
+          </TouchableOpacity>  
       </View>
-      {hasMediaLibraryPermission ? 
-        <TouchableOpacity style={styles.submitImage} title="Submit" onPress={() => uploadImage(photo, props)} >
-          <Image style={styles.submitImage} source={require("../assets/yes.png")}/>
-        </TouchableOpacity>
-         : undefined}
-        <TouchableOpacity style={styles.discardImage} title="Discard" onPress={() => setPhoto(undefined)}>
-          <Image style={styles.discardImage} source={require("../assets/no.png")}/>
-        </TouchableOpacity>  
-   </View>
     );
   }
 
@@ -206,6 +222,6 @@ const styles = StyleSheet.create({
         aspectRatio: 1
     },
     activity: {
-
+      bottom: "40%"
     }
   });
