@@ -35,7 +35,7 @@ const CameraScreen = (props) => {
   useEffect(() => {
     setTimeout(() => {
         setAnimate(false);
-    }, 11000);
+    }, 10000);
   })
 
   //if permissions are not clear, do not open the camera
@@ -68,10 +68,10 @@ const CameraScreen = (props) => {
   //this method changes the zoom of the camera
     const changeZoom = (event) => {
       if (event.nativeEvent.scale > 1 && zoom < 1) {
-        setZoom(zoom + 0.0005);
+        setZoom(zoom + 0.0009);
       }
       if (event.nativeEvent.scale < 1 && zoom > 0) {
-        setZoom(zoom - 0.0005);
+        setZoom(zoom - 0.0009);
       }
     };
 
@@ -114,46 +114,59 @@ const CameraScreen = (props) => {
     // Save image to the camera roll (which will later be send to our model)
     //Discard, which will return back to the camera screen
     return (
-      <View style={{ flex: 1}}>
-        <View style={styles.cameraContainer}>
+        <View style={styles.container}>
           <Image style={styles.cameraContainer} source={{ uri: "data:image/jpg;base64," + photo.base64 }}/>
-        </View>
-        {isLoading ? 
-          <ActivityIndicator animating={animate} style={[styles.activity, {transform: [{ scale: 1.5 }]}]}  size="large" color="blue" ></ActivityIndicator>
-         : 
-         <Text></Text>
-         }
-          <TouchableOpacity style={styles.submitImage} title="Submit" onPress={() => {
+          <View style={styles.btnContainer2}>
+          <TouchableOpacity style={styles.imageInPreview} title="Discard" onPress={() => {
+              setPhoto(undefined) 
+              setIsLoading(false)
+              setAnimate(false)
+            }}>
+            <Image style={styles.imageInPreview} source={require("../assets/no.png")}/>
+          </TouchableOpacity> 
+          <View style={styles.space}></View>
+         <TouchableOpacity style={styles.submitImage} title="Submit" onPress={() => {
             setIsLoading(true)
             setAnimate(true)
             uploadImage(photo, props)
           }}>
             <Image style={styles.submitImage} source={require("../assets/yes.png")}/>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.discardImage} title="Discard" onPress={() => setPhoto(undefined)}>
-            <Image style={styles.discardImage} source={require("../assets/no.png")}/>
-          </TouchableOpacity>  
+         </View>
+         {isLoading ? 
+            <ActivityIndicator animating={animate} style={[styles.activity, {transform: [{ scale: 1.5 }]}]}  size="large" color="blue" ></ActivityIndicator>
+          : 
+          <Text></Text>
+          }
       </View>
     );
   }
 
   return (
-    <PinchGestureHandler onGestureEvent={(event) => changeZoom(event)}>
-    <View style={{ flex: 1}}>
-      <View style={styles.cameraContainer}>
-            <Camera zoom={zoom} type={type} style={styles.container} ref={cameraRef}/>
+    <SafeAreaView style={styles.safeWrapper}>
+      <View style={styles.container}>
+        <Camera
+          zoom={zoom}
+          ref={cameraRef}
+          style={styles.camera}
+          type={type}
+        />
+        <View style={styles.btnContainer1}>
+          <TouchableOpacity style={styles.imageInCamera} onPress={pickImage}>
+            <Image style={styles.imageInCamera} source={require("../assets/gallery.png")}/>
+          </TouchableOpacity>
+          <View style={styles.spaceForCamera}></View>
+          <TouchableOpacity style={styles.takeImage} onPress={takePic}>
+            <Image style={styles.takeImage} source={require("../assets/takeImage2.png")}/>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.snapWrapper}>
+        <TouchableOpacity onPress={toggleCameraType}>
+          <Image style={styles.flipCamera} source={require("../assets/flipCamera.png")}/>
+        </TouchableOpacity>
+        </View>
       </View>
-      <TouchableOpacity style={styles.column} onPress={takePic}>
-        <Image style={styles.takeImage} source={require("../assets/takeImage2.png")}/>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.column} onPress={pickImage}>
-        <Image style={styles.gallery} source={require("../assets/gallery.png")}/>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.column} onPress={toggleCameraType}>
-        <Image style={styles.flipCamera} source={require("../assets/flipCamera.png")}/>
-        </TouchableOpacity>
-   </View>
-   </PinchGestureHandler>
+    </SafeAreaView>
   );
 };
   
@@ -161,67 +174,90 @@ export default CameraScreen;
 
 //css
 const styles = StyleSheet.create({
-    container: {
-      display: 'flex',
-      width: '100%',
-      height: '100%',
-    },
-    buttonContainer: {
-      marginTop: 700,
-    },
-    history: {
-      height: 45,
-      width: 45,
-      left: "66%",
-      top: "180%"
-    },
-    image: {
-      height: 400,
-      width: 415,
-      position: "relative"
-    },
-    takeImage: {
-      height: 100,
-      width: 100,
-      left: "37%",
-      top: "10%"
-    },
-    gallery: {
-      height: 50,
-      width: 50,
-      left: "20%",
-      top: "-125%"
-      },
-      discardImage:{
-        height: 70,
-        width: 70,
-        bottom: "3%",
-        left: "20%"
-      },
-      flipCamera:{
-        height: 50,
-        width: 50,
-        right: "-84%",
-        top: "-1460%",
-        backgroundColor: "white",
-        borderRadius: "50%",
-      },
-      submitImage:{
-        height: 75,
-        width: 70,
-        bottom: "-5.6%",
-        left: "50%",
-        padding: 0,
-      },
-      cameraContainer: {
-        flex: 1,
-        flexDirection: 'row'
-    },
-    fixedRatio:{
-        flex: 1,
-        aspectRatio: 1
-    },
-    activity: {
-      bottom: "40%"
-    }
+  safeWrapper: {
+    flex: 1,
+  },
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    backgroundColor: 'white',
+    position: 'relative',
+  },
+  cameraContainer: {
+    width: "100%",
+    height: "80%"
+  },
+  camera: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  imageInCamera :{
+    width: 60,
+    height: 60
+  },
+  takeImage :{
+    width: 100,
+    height: 100
+  },
+  flipCamera:{
+    backgroundColor: "white",
+    borderRadius: "50%",
+    height: 70,
+    width: 70,
+    top: "20%",
+    right: "10%",
+    justifyContent: "center",
+  },
+  snapWrapper: {
+    flex: 0,
+    flexDirection: 'row',
+    backgroundColor: 'rgba(0, 0, 0, 0)',
+    position: 'absolute',
+    alignSelf: "flex-end"
+  },
+  imageInCamera:{
+    height: 60,
+    width: 60,
+    marginLeft: "10%"
+  },
+  takeImage :{
+    height: 100,
+    width: 100,
+  },
+  spaceForCamera:{
+    width: "15%",
+  },
+  activity: {
+    position: "absolute",
+    flexDirection: 'row',
+    justifyContent: "center",
+    alignSelf: "center",
+    top: "40%",
+  },
+  btnContainer1: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "left",
+  },
+  //for the preview screen
+  btnContainer2: {
+    width: "100%",
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  space: {
+    width: "25%",
+  },
+  imageInPreview:{
+    height: 70,
+    width: 70,
+  },
+  submitImage:{
+    height: 73,
+    width: 70,
+  },
   });

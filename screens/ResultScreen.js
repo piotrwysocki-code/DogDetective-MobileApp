@@ -22,22 +22,22 @@ class  ResultScreen extends Component {
         <ImageBackground source={require("../assets/pawbg.png")} resizeMode="cover" style={styles.container}>
         <Image style={styles.image} source={{ uri: "data:image/jpg;base64," + img.base64 }}/>
             <View style={styles.results}>
-            <Text style={styles.text}>
-              {arrayOfMessages[index]}
-            </Text>
-            {improvedResult.map(name => ( 
-              <Text style={styles.text} key={name.Breed}>
-                {"\n"}
-                {name.Breed.replace(/_/g, " ")}
-                {"\n"}
-                <Progress.Bar progress={name.Confidence} width={200} height={15} text={10} />
-                {" "}{Math.round(name.Confidence * 100)}%
+              <Text style={styles.text}>
+                {arrayOfMessages[index]}
               </Text>
+              {improvedResult.map(name => ( 
+                <Text style={styles.text} key={name.Breed}>
+                  {"\n"}
+                  {name.Breed.replace(/_/g, " ")}
+                  {"\n"}
+                  <Progress.Bar progress={name.Confidence} width={200} height={15} text={10} />
+                  {" "}{Math.round(name.Confidence * 100)}%
+                </Text>
 
-            ))}
-            <TouchableOpacity onPress={() => this.props.navigation.navigate('Home')} style={styles.btn}>
-              <Text>Done</Text>
-            </TouchableOpacity>
+              ))}
+              <TouchableOpacity onPress={() => this.props.navigation.navigate('Home')} style={styles.btn}>
+                <Text>Done</Text>
+              </TouchableOpacity>
           </View> 
         </ImageBackground>
       </SafeAreaView>
@@ -51,23 +51,23 @@ const styles = StyleSheet.create({
       flex: 1,
       alignSelf: 'center',
       width: '100%',
-      height: '120%',
+      height: '150%',
       alignItems: 'center',
       justifyContent: 'center',
     },
     results: {
       alignItems: 'center',
-      justifyContent: 'right',
+      width: "100%",
       top: '25%'
     },
     image: {
-      width: 300,
-      height: 400,
-      marginBottom: "20%",
+      width: "80%",
+      height: "50%",
+      marginBottom: "25%",
     },
     progress: {
-      height: 15,
-      width:200
+      height: "auto",
+      width: "100%"
     },
     text: {
       fontFamily: 'Arial',
@@ -76,20 +76,19 @@ const styles = StyleSheet.create({
       fontSize: 20,
     },
     bgImage: {
-      width: 450,
-      height: 850
+      width: "100%",
+      height: "auto"
     },
     btn:{
       backgroundColor: "white",
       fontSize: "20px",
-      width: 150,
-      height: 40,
-      justifyContent: 'center',
+      width: "50%",
+      height: "auto",
       alignItems: 'center',
       padding: 10,
       borderRadius: 25,
       overflow: 'hidden',
-      top: "-80%"
+      top: "-75%"
     }
   });
 
