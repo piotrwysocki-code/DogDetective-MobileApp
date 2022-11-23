@@ -20,25 +20,24 @@ class  ResultScreen extends Component {
     return (
       <SafeAreaView style={styles.container}>
         <ImageBackground source={require("../assets/pawbg.png")} resizeMode="cover" style={styles.container}>
-        <Image style={styles.image} source={{ uri: "data:image/jpg;base64," + img.base64 }}/>
-            <View style={styles.results}>
+          <View style={styles.box}>
+            <Image style={styles.img} source={{ uri: "data:image/jpg;base64," + img.base64 }}/>
+            <View style={styles.resultsBox}>
               <Text style={styles.text}>
                 {arrayOfMessages[index]}
               </Text>
-              {improvedResult.map(name => ( 
-                <Text style={styles.text} key={name.Breed}>
-                  {"\n"}
-                  {name.Breed.replace(/_/g, " ")}
-                  {"\n"}
-                  <Progress.Bar progress={name.Confidence} width={200} height={15} text={10} />
-                  {" "}{Math.round(name.Confidence * 100)}%
-                </Text>
-
-              ))}
-              <TouchableOpacity onPress={() => this.props.navigation.navigate('Home')} style={styles.btn}>
-                <Text>Done</Text>
-              </TouchableOpacity>
-          </View> 
+              {improvedResult.map(name => (name.Confidence * 100 > 0.5 ? (
+                  <Text style={styles.text} key={name.Breed}>{"\n"}
+                  {name.Breed.replace(/_/g, " ")}{"\n"}
+                  <Progress.Bar progress={name.Confidence} width={200} height={15} text={10} />{" "}
+                  {Math.round(name.Confidence * 100)}% 
+                  </Text>
+              ): (null)) )}
+            </View> 
+            <TouchableOpacity onPress={() => this.props.navigation.navigate('Home')} style={styles.btn}>
+              <Text>Done</Text>
+            </TouchableOpacity>
+          </View>
         </ImageBackground>
       </SafeAreaView>
     );
@@ -49,46 +48,40 @@ class  ResultScreen extends Component {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      alignSelf: 'center',
-      width: '100%',
-      height: '150%',
+      backgroundColor: '#a3e5fb',
       alignItems: 'center',
       justifyContent: 'center',
-    },
-    results: {
-      alignItems: 'center',
       width: "100%",
-      top: '25%'
+      height: "140%",
     },
-    image: {
-      width: "80%",
+    img:{
+      width: "85%",
       height: "50%",
-      marginBottom: "25%",
     },
-    progress: {
-      height: "auto",
-      width: "100%"
+    box:{
+      alignItems: 'center',
+      width: "90%",
+      height: "90%",
+      justifyContent: "space-evenly"
+    },
+    resultsBox: {
+      alignItems: 'center',
+      width: "90%",
+      justifyContent: "center",
     },
     text: {
       fontFamily: 'Arial',
       fontWeight: 'bold',
-      bottom: "100%",
       fontSize: 20,
-    },
-    bgImage: {
-      width: "100%",
-      height: "auto"
     },
     btn:{
       backgroundColor: "white",
       fontSize: "20px",
-      width: "50%",
-      height: "auto",
+      paddingHorizontal: 50,
       alignItems: 'center',
       padding: 10,
       borderRadius: 25,
       overflow: 'hidden',
-      top: "-75%"
     }
   });
 

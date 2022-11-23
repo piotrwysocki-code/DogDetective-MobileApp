@@ -155,9 +155,11 @@ const CameraScreen = (props) => {
           <TouchableOpacity style={styles.imageInCamera} onPress={pickImage}>
             <Image style={styles.imageInCamera} source={require("../assets/gallery.png")}/>
           </TouchableOpacity>
-          <View style={styles.spaceForCamera}></View>
           <TouchableOpacity style={styles.takeImage} onPress={takePic}>
             <Image style={styles.takeImage} source={require("../assets/takeImage2.png")}/>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.takeImage} onPress={takePic}>
+            <Text></Text>
           </TouchableOpacity>
         </View>
         <View style={styles.snapWrapper}>
@@ -203,10 +205,10 @@ const styles = StyleSheet.create({
   flipCamera:{
     backgroundColor: "white",
     borderRadius: "50%",
-    height: 70,
-    width: 70,
+    height: 55,
+    width: 55,
     top: "20%",
-    right: "10%",
+    right: "15%",
     justifyContent: "center",
   },
   snapWrapper: {
@@ -239,7 +241,7 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "left",
+    justifyContent: "space-evenly",
   },
   //for the preview screen
   btnContainer2: {
